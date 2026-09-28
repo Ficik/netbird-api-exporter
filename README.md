@@ -40,7 +40,7 @@ The exporter provides the following metrics:
 | ---------------------------------------- | ----- | ---------------------------------------------------------------------------- | ----------------------------------- |
 | `netbird_peers`                          | Gauge | Total number of NetBird peers                                                | -                                   |
 | `netbird_peers_connected`                | Gauge | Number of connected/disconnected peers                                       | `connected`                         |
-| `netbird_peer_last_seen_timestamp`       | Gauge | Last seen timestamp for each peer                                            | `peer_id`, `peer_name`, `hostname`, `user_id`  |
+| `netbird_peer_last_seen_timestamp`       | Gauge | Last seen timestamp for each peer                                            | `peer_id`, `peer_name`, `hostname`, `dns_label`, `user_id` |
 | `netbird_peers_by_os`                    | Gauge | Number of peers by operating system                                          | `os`                                |
 | `netbird_peers_by_country`               | Gauge | Number of peers by country/city                                              | `country_code`, `city_name`         |
 | `netbird_peers_by_group`                 | Gauge | Number of peers by group                                                     | `group_id`, `group_name`            |

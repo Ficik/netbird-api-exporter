@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+### Features
+- Add a dns_label label to netbird_peer_last_seen_timestamp: the name a peer resolves as, which NetBird suffixes when another peer already holds it, so peer_name alone does not give the peer's address. Adding the label starts new series for every peer
+Files modified in this change:
+- Modified: README.md
+- Modified: pkg/exporters/peers.go
+- Modified: pkg/exporters/peers_test.go
+
 ## [0.2.16] - 2026-09-06
 
 ## [0.2.15] - 2026-09-06

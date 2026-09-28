@@ -56,7 +56,10 @@ func NewPeersExporter(client *nbclient.Client) *PeersExporter {
 				Name: "netbird_peer_last_seen_timestamp",
 				Help: "Last seen timestamp of NetBird peers",
 			},
-			[]string{"peer_id", "peer_name", "hostname", "user_id"},
+			// dns_label is the name the peer resolves as, which is not always its peer_name:
+			// NetBird suffixes the label when another peer already holds it (e.g. a reinstalled
+			// machine registering again), so peer_name alone does not give the peer's address.
+			[]string{"peer_id", "peer_name", "hostname", "dns_label", "user_id"},
 		),
 
 		peersByOS: prometheus.NewGaugeVec(
@@ -207,7 +210,7 @@ func (e *PeersExporter) updateMetrics(peers []api.Peer) {
 		}
 
 		// Last seen timestamp
-		e.peersLastSeen.WithLabelValues(peer.Id, peer.Name, peer.Hostname, peer.UserId).Set(float64(peer.LastSeen.Unix()))
+		e.peersLastSeen.WithLabelValues(peer.Id, peer.Name, peer.Hostname, peer.DnsLabel, peer.UserId).Set(float64(peer.LastSeen.Unix()))
 
 		// OS distribution
 		osKey := peer.Os

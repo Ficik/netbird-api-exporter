@@ -371,6 +371,44 @@ func TestPeersExporter_UpdateMetrics(t *testing.T) {
 	}
 }
 
+func TestPeersExporter_LastSeenCarriesDnsLabel(t *testing.T) {
+	client := nbclient.New("https://api.netbird.io", "test-token")
+	exporter := NewPeersExporter(client)
+
+	// Two peers registered under one name: NetBird suffixes the second one's DNS label, so the
+	// label is the only thing telling their addresses apart.
+	exporter.updateMetrics([]api.Peer{
+		{Id: "peer1", Name: "booth-527", Hostname: "booth-527", DnsLabel: "booth-527", LastSeen: time.Unix(1000, 0)},
+		{Id: "peer2", Name: "booth-527", Hostname: "booth-527", DnsLabel: "booth-527-190-137", LastSeen: time.Unix(2000, 0)},
+	})
+
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(exporter.peersLastSeen)
+
+	families, err := registry.Gather()
+	if err != nil {
+		t.Fatalf("Failed to gather metrics: %v", err)
+	}
+
+	got := map[string]string{}
+	for _, family := range families {
+		for _, metric := range family.GetMetric() {
+			labels := map[string]string{}
+			for _, label := range metric.GetLabel() {
+				labels[label.GetName()] = label.GetValue()
+			}
+			got[labels["peer_id"]] = labels["dns_label"]
+		}
+	}
+
+	want := map[string]string{"peer1": "booth-527", "peer2": "booth-527-190-137"}
+	for id, label := range want {
+		if got[id] != label {
+			t.Errorf("peer %s: dns_label = %q, want %q", id, got[id], label)
+		}
+	}
+}
+
 func TestPeersExporter_MetricLabels(t *testing.T) {
 	client := nbclient.New("https://api.netbird.io", "test-token")
 	exporter := NewPeersExporter(client)
